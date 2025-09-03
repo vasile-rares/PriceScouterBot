@@ -6,13 +6,24 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urlparse
 from webdriver_manager.chrome import ChromeDriverManager
+from rapidfuzz import fuzz
 import os, random, time
 
 
 # --- Funcții auxiliare ---
-def _match_score(title: str, search_words: list[str]) -> int:
-    tl = title.lower()
-    return sum(1 for w in search_words if w in tl)
+def _match_score(title: str, query: str) -> float:
+    """Returnează un scor de similaritate 0..100 între titlu și căutare folosind doar rapidfuzz.
+
+    Folosim o combinație robustă pentru ordine/rumoare: token_set_ratio (ignoră ordine/duplicări)
+    și partial_ratio (potriviri parțiale). Întoarcem scorul maxim.
+    """
+    t = (title or "").lower()
+    q = (query or "").lower()
+    # token_set_ratio e mai tolerant la cuvinte în plus; partial_ratio ajută la potriviri subșir.
+    return max(
+        fuzz.token_set_ratio(q, t),
+        fuzz.partial_ratio(q, t),
+    )
 
 
 def _build_driver() -> webdriver.Chrome:
@@ -107,8 +118,7 @@ def _throttled_get(driver: webdriver.Chrome, url: str, *, max_retries: int = 2):
 # --- Funcții site-uri ---
 def search_evomag(product_name: str, driver: webdriver.Chrome):
     best_result = None
-    best_score = 0
-    search_words = product_name.lower().split()
+    best_score = 0.0
     try:
         url = f"https://www.evomag.ro/?sn.q={product_name.replace(' ', '+')}/"
         _throttled_get(driver, url)
@@ -122,8 +132,8 @@ def search_evomag(product_name: str, driver: webdriver.Chrome):
             try:
                 # Titlu
                 title = p.find_element(By.CSS_SELECTOR, "div.npi_name a").text.strip()
-                score = _match_score(title, search_words)
-                if score == 0:
+                score = _match_score(title, product_name)
+                if score < 60:  # prag minim pentru relevanță
                     continue
 
                 # Preț
@@ -143,14 +153,16 @@ def search_evomag(product_name: str, driver: webdriver.Chrome):
                 # Link
                 link = None
                 try:
-                    link = p.find_element(By.CSS_SELECTOR, "div.npi_name a").get_attribute("href")
+                    link = p.find_element(
+                        By.CSS_SELECTOR, "div.npi_name a"
+                    ).get_attribute("href")
                 except Exception:
                     pass
 
                 if score > best_score and price and link:
                     best_result = {"title": title, "price": price, "url": link}
                     best_score = score
-                    if best_score >= len(search_words):
+                    if best_score >= 95:  # potrivire foarte bună, putem opri
                         break
             except Exception:
                 continue
@@ -162,8 +174,7 @@ def search_evomag(product_name: str, driver: webdriver.Chrome):
 
 def search_pcgarage(product_name: str, driver: webdriver.Chrome):
     best_result = None
-    best_score = 0
-    search_words = product_name.lower().split()
+    best_score = 0.0
     try:
         url = f"https://www.pcgarage.ro/cauta/{product_name.replace(' ', '+')}/"
         _throttled_get(driver, url)
@@ -179,8 +190,8 @@ def search_pcgarage(product_name: str, driver: webdriver.Chrome):
                 title = p.find_element(
                     By.CSS_SELECTOR, "div.product_box_name h2 a"
                 ).text.strip()
-                score = _match_score(title, search_words)
-                if score == 0:
+                score = _match_score(title, product_name)
+                if score < 60:
                     continue
 
                 # Preț
@@ -210,7 +221,7 @@ def search_pcgarage(product_name: str, driver: webdriver.Chrome):
                 if score > best_score and price and link:
                     best_result = {"title": title, "price": price, "url": link}
                     best_score = score
-                    if best_score >= len(search_words):
+                    if best_score >= 95:
                         break
             except Exception:
                 continue
@@ -222,8 +233,7 @@ def search_pcgarage(product_name: str, driver: webdriver.Chrome):
 
 def search_altex(product_name: str, driver: webdriver.Chrome):
     best_result = None
-    best_score = 0
-    search_words = product_name.lower().split()
+    best_score = 0.0
     try:
         url = f"https://altex.ro/cauta/?q={product_name.replace(' ', '%20')}"
         _throttled_get(driver, url)
@@ -236,8 +246,8 @@ def search_altex(product_name: str, driver: webdriver.Chrome):
                 title = p.find_element(
                     By.CSS_SELECTOR, "span.Product-name"
                 ).text.strip()
-                score = _match_score(title, search_words)
-                if score == 0:
+                score = _match_score(title, product_name)
+                if score < 60:
                     continue
                 price = None
                 try:
@@ -260,7 +270,7 @@ def search_altex(product_name: str, driver: webdriver.Chrome):
                 if score > best_score and price and link:
                     best_result = {"title": title, "price": price, "url": link}
                     best_score = score
-                    if best_score >= len(search_words):
+                    if best_score >= 95:
                         break
             except Exception:
                 continue
@@ -271,8 +281,7 @@ def search_altex(product_name: str, driver: webdriver.Chrome):
 
 def search_vexio(product_name: str, driver: webdriver.Chrome):
     best_result = None
-    best_score = 0
-    search_words = product_name.lower().split()
+    best_score = 0.0
     try:
         url = f"https://www.vexio.ro/search?q={product_name.replace(' ', '%20')}"
         _throttled_get(driver, url)
@@ -285,8 +294,8 @@ def search_vexio(product_name: str, driver: webdriver.Chrome):
         for p in products:
             try:
                 title = p.find_element(By.CSS_SELECTOR, "h2.name a").text.strip()
-                score = _match_score(title, search_words)
-                if score == 0:
+                score = _match_score(title, product_name)
+                if score < 60:
                     continue
                 price = None
                 try:
@@ -309,7 +318,7 @@ def search_vexio(product_name: str, driver: webdriver.Chrome):
                 if score > best_score and price and link:
                     best_result = {"title": title, "price": price, "url": link}
                     best_score = score
-                    if best_score >= len(search_words):
+                    if best_score >= 95:
                         break
             except Exception:
                 continue
@@ -320,8 +329,7 @@ def search_vexio(product_name: str, driver: webdriver.Chrome):
 
 def search_emag(product_name: str, driver: webdriver.Chrome):
     best_result = None
-    best_score = 0
-    search_words = product_name.lower().split()
+    best_score = 0.0
     try:
         url = f"https://www.emag.ro/search/{product_name.replace(' ', '%20')}"
         _throttled_get(driver, url)
@@ -333,8 +341,8 @@ def search_emag(product_name: str, driver: webdriver.Chrome):
             try:
                 title_elem = p.find_element(By.CSS_SELECTOR, "a.card-v2-title")
                 title = title_elem.text.strip()
-                score = _match_score(title, search_words)
-                if score == 0:
+                score = _match_score(title, product_name)
+                if score < 60:
                     continue
 
                 price = None
@@ -360,7 +368,7 @@ def search_emag(product_name: str, driver: webdriver.Chrome):
                 if score > best_score and price and link:
                     best_result = {"title": title, "price": price, "url": link}
                     best_score = score
-                    if best_score >= len(search_words):
+                    if best_score >= 95:
                         break
 
                 if idx > 60 and best_result:
