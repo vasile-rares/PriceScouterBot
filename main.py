@@ -1,10 +1,17 @@
-from scrapers import _build_driver, search_altex, search_emag, search_vexio, search_pcgarage
+from scrapers import _build_driver, search_altex, search_emag, search_vexio, search_pcgarage, search_evomag
 
 if __name__ == "__main__":
     product = input("Introdu numele produsului: ")
 
     driver = _build_driver()
     try:
+        print("\nCel mai bun rezultat pe eVoMag...")
+        evomag_result = search_evomag(product, driver)
+        if evomag_result:
+            print(f"{evomag_result['title']} - {evomag_result['price']} Lei\n{evomag_result['url']}")
+        else:
+            print("Nu s-au găsit produse potrivite pe eVoMag.")
+
         print("\nCel mai bun rezultat pe PC Garage...")
         pcgarage_result = search_pcgarage(product, driver)
         if pcgarage_result:
