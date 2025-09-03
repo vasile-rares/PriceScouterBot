@@ -105,6 +105,66 @@ def _throttled_get(driver: webdriver.Chrome, url: str, *, max_retries: int = 2):
 
 
 # --- Funcții site-uri ---
+def search_pcgarage(product_name: str, driver: webdriver.Chrome):
+    best_result = None
+    best_score = 0
+    search_words = product_name.lower().split()
+    try:
+        url = f"https://www.pcgarage.ro/cauta/{product_name.replace(' ', '+')}/"
+        _throttled_get(driver, url)
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, "div.product_b_container")
+            )
+        )
+        products = driver.find_elements(By.CSS_SELECTOR, "div.product_b_container")
+        for p in products:
+            try:
+                # Titlu
+                title = p.find_element(
+                    By.CSS_SELECTOR, "div.product_box_name h2 a"
+                ).text.strip()
+                score = _match_score(title, search_words)
+                if score == 0:
+                    continue
+
+                # Preț
+                price = None
+                try:
+                    price_text = (
+                        p.find_element(
+                            By.CSS_SELECTOR, "div.product_box_price_container p.price"
+                        )
+                        .text.replace("RON", "")
+                        .replace("\u00a0", "")
+                        .replace(",", ".")
+                    )
+                    price = float(price_text)
+                except Exception:
+                    pass
+
+                # Link
+                link = None
+                try:
+                    link = p.find_element(
+                        By.CSS_SELECTOR, "div.product_box_name h2 a"
+                    ).get_attribute("href")
+                except Exception:
+                    pass
+
+                if score > best_score and price and link:
+                    best_result = {"title": title, "price": price, "url": link}
+                    best_score = score
+                    if best_score >= len(search_words):
+                        break
+            except Exception:
+                continue
+    except Exception:
+        pass
+
+    return best_result
+
+
 def search_altex(product_name: str, driver: webdriver.Chrome):
     best_result = None
     best_score = 0
