@@ -1,0 +1,168 @@
+{
+  "items": {
+    "pcgarage": [
+      {
+        "title": "Casti Gaming Logitech G PRO X 2 Lightspeed Wireless Black",
+        "price": 919.99,
+        "url": "https://www.pcgarage.ro/casti-gaming/logitech/g-pro-x-2-lightspeed-wireless-black/",
+        "specs": {
+          "attributes": {
+            "Denumire:": "Casti Gaming Logitech G PRO X 2 Lightspeed Wireless Black",
+            "Cod producator:": "981-001263",
+            "Garantie comerciala:": "24 luni",
+            "Garantie de conformitate:": "24 luni",
+            "Tehnologie": "Wired, Wireless 2.4 GHz, Bluetooth",
+            "Sunet": "7.1 Surround",
+            "Tip": "Externe",
+            "Microfon": "Da",
+            "Diametru difuzoare": "50",
+            "Impedanta": "38Ω",
+            "Frecventa raspuns": "100 - 10kHz",
+            "Sensibilitate": "87.8 dB",
+            "Culoare": "Negru",
+            "Greutate": "345 g",
+            "Conectare Bluetooth": "Da",
+            "Conectare Wireless": "Da",
+            "Conectare USB": "Da",
+            "Conectare Jack": "1x Jack 3.5 mm",
+            "Tip Jack 3.5 mm": "TRRS",
+            "PC": "Da",
+            "PlayStation 4": "Da",
+            "Nintendo": "Da",
+            "PlayStation 5": "Da"
+          }
+        },
+        "saved_at": 1756965114.9093523
+      },
+      {
+        "title": "Casti Gaming Logitech G PRO X",
+        "price": 449.99,
+        "url": "https://www.pcgarage.ro/casti-gaming/logitech/pro-x/",
+        "specs": {
+          "attributes": {
+            "Denumire:": "Casti Gaming Logitech G PRO X",
+            "Cod producator:": "981-000818",
+            "Garantie comerciala:": "24 luni",
+            "Garantie de conformitate:": "24 luni",
+            "Tehnologie": "Wired",
+            "Sunet": "7.1 Surround",
+            "Tip": "Externe",
+            "Microfon": "Da",
+            "Diametru difuzoare": "50 mm",
+            "Impedanta": "35 Ohm",
+            "Frecventa raspuns": "100 - 10.000 Hz",
+            "Sensibilitate": "91.7 dB",
+            "Lungime cablu": "2 m",
+            "Culoare": "Negru - Argintiu",
+            "Caracteristici": "Unidirectional",
+            "Conectare USB": "Da",
+            "Conectare Jack": "1x Jack 3.5 mm",
+            "Tip Jack 3.5 mm": "TRRS",
+            "Altele": "Cablu adaptor 1x TRRS la 2x TRS",
+            "PC": "Da",
+            "Smartphone & Tableta": "Da"
+          }
+        },
+        "saved_at": 1756965147.812905
+      },
+      {
+        "title": "Casti Gaming Logitech G PRO X 2 Lightspeed Wireless White",
+        "price": 849.99,
+        "url": "https://www.pcgarage.ro/casti-gaming/logitech/g-pro-x-2-lightspeed-wireless-white/",
+        "specs": {
+          "attributes": {
+            "Denumire:": "Casti Gaming Logitech G PRO X 2 Lightspeed Wireless White",
+            "Cod producator:": "981-001269",
+            "Garantie comerciala:": "24 luni",
+            "Garantie de conformitate:": "24 luni",
+            "Tehnologie": "Wired, Wireless 2.4 GHz, Bluetooth",
+            "Sunet": "7.1 Surround",
+            "Tip": "Externe",
+            "Microfon": "Da",
+            "Diametru difuzoare": "50 mm",
+            "Impedanta": "38Ω",
+            "Frecventa raspuns": "100 - 10kHz",
+            "Sensibilitate": "87.8 dB",
+            "Culoare": "Alb",
+            "Greutate": "345 g",
+            "Conectare Bluetooth": "Da",
+            "Conectare Wireless": "Da",
+            "Conectare USB": "Da",
+            "Conectare Jack": "1x Jack 3.5 mm",
+            "Tip Jack 3.5 mm": "TRRS",
+            "PC": "Da",
+            "PlayStation 4": "Da",
+            "Nintendo": "Da",
+            "PlayStation 5": "Da"
+          }
+        },
+        "saved_at": 1756965264.2906349
+      },
+      {
+        "title": "Procesor Intel Raptor Lake Refresh, Core i3 14100F 3.5GHz box",
+        "price": 437.22,
+        "url": "https://www.pcgarage.ro/procesoare/intel/raptor-lake-refresh-core-i3-14100f-35ghz-box/",
+        "specs": {
+          "attributes": {
+            "Denumire:": "Procesor Intel Raptor Lake Refresh, Core i3 14100F 3.5GHz box",
+            "Cod producator:": "BX8071514100F",
+            "Garantie comerciala:": "36 luni",
+            "Garantie de conformitate:": "24 luni",
+            "Intel": "Core i3",
+            "Recomandat pentru Gaming": "Da",
+            "Socket": "1700",
+            "Serie": "Core i3 14th gen",
+            "Nucleu": "Raptor Lake Refresh",
+            "Numar nuclee": "4",
+            "Numar thread-uri": "8",
+            "Frecventa": "DDR4 3200 MHz\nDDR5 4800 MHz",
+            "Frecventa turbo pana la": "4700 Mhz",
+            "Cache level 2": "5 MB",
+            "Smart Cache": "12 MB",
+            "Putere totala disipata": "58 W",
+            "Cooler stock inclus": "Da",
+            "Model": "Fara grafica integrata",
+            "Tip": "DDR4\nDDR5",
+            "Memorie maxima": "128 GB",
+            "Suport": "Dual Channel",
+            "Revizie PCI Express": "5.0",
+            "Max PCI Express Lanes": "20"
+          }
+        },
+        "saved_at": 1756965793.901152
+      },
+      {
+        "title": "Mouse Gaming Logitech G Pro X Superlight Lightspeed Wireless White, ultra usor 63g",
+        "price": 786.99,
+        "url": "https://www.pcgarage.ro/mouse-gaming/logitech/g-pro-x-superlight-lightspeed-wireless-white/",
+        "specs": {
+          "attributes": {
+            "Denumire:": "Mouse Gaming Logitech G Pro X Superlight Lightspeed Wireless White, ultra usor 63g",
+            "Cod producator:": "910-005942, 910-005943",
+            "Garantie comerciala:": "24 luni",
+            "Garantie de conformitate:": "24 luni",
+            "Tehnologie": "Wireless 2.4 GHz",
+            "Interfata": "USB",
+            "Tip senzor": "Optic",
+            "Rezolutie maxima": "25600 dpi",
+            "Numar butoane": "5",
+            "Culoare": "Alb",
+            "Dimensiuni": "125 x 63.5 x 40 mm",
+            "Greutate": "63 g",
+            "Altele": "Senzor optic: HERO 25K"
+          }
+        },
+        "saved_at": 1756966325.34192
+      }
+    ]
+  },
+  "query_index": {
+    "pcgarage": {
+      "casti logitech g pro x 2": "https://www.pcgarage.ro/casti-gaming/logitech/g-pro-x-2-lightspeed-wireless-black/",
+      "casti logitech g pro x": "https://www.pcgarage.ro/casti-gaming/logitech/pro-x/",
+      "casti logitech g pro x 2 alb": "https://www.pcgarage.ro/casti-gaming/logitech/g-pro-x-2-lightspeed-wireless-white/",
+      "i3 14100f": "https://www.pcgarage.ro/procesoare/intel/raptor-lake-refresh-core-i3-14100f-35ghz-box/",
+      "mouse logitech superlight": "https://www.pcgarage.ro/mouse-gaming/logitech/g-pro-x-superlight-lightspeed-wireless-white/"
+    }
+  }
+}
