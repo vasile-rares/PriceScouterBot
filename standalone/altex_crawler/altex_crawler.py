@@ -3,7 +3,7 @@ import os
 import time
 import random
 from typing import List, Dict, Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -17,6 +17,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # ------------------- Driver -------------------
 def build_driver() -> webdriver.Chrome:
     opts = Options()
+    opts.add_argument("--headless=new")
     opts.add_argument("--no-sandbox")
     opts.add_argument("--disable-dev-shm-usage")
     opts.add_argument("--log-level=3")
@@ -36,7 +37,7 @@ def build_driver() -> webdriver.Chrome:
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), options=opts
     )
-    driver.set_page_load_timeout(35)
+    driver.set_page_load_timeout(15)
     try:
         driver.execute_cdp_cmd(
             "Page.addScriptToEvaluateOnNewDocument",
@@ -72,7 +73,7 @@ def parse_price(text: str) -> float | None:
 
 # ------------------- Crawling -------------------
 def safe_get(
-    driver: webdriver.Chrome, url: str, retries: int = 2, wait_after: float = 0.6
+    driver: webdriver.Chrome, url: str, retries: int = 2, wait_after: float = 0.2
 ) -> None:
     last_exc = None
     for attempt in range(retries + 1):
@@ -82,7 +83,7 @@ def safe_get(
             return
         except Exception as e:
             last_exc = e
-            time.sleep(1.0 + attempt)
+            time.sleep(0.2 + attempt * 0.1)
     if last_exc:
         raise last_exc
 
@@ -90,7 +91,7 @@ def safe_get(
 def crawl_page(driver: webdriver.Chrome, url: str) -> List[Dict[str, Any]]:
     safe_get(driver, url)
     try:
-        WebDriverWait(driver, 12).until(
+        WebDriverWait(driver, 1).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "body"))
         )
     except Exception:
@@ -135,11 +136,11 @@ def crawl_listing(
             else:
                 url = urljoin(base_url + "/", f"p/{page}/")
         page_items = crawl_page(driver, url)
-        print(f"[Altex] Page {page}: {len(page_items)} items")
+        print(f"[Altex] {url} -> {len(page_items)} items")
         if not page_items:
             break
         all_items.extend(page_items)
-        time.sleep(0.8)
+        time.sleep(0.05)
     # de-duplicate by URL
     seen = set()
     deduped = []
@@ -151,23 +152,55 @@ def crawl_listing(
     return deduped
 
 
+# ------------------- Category Discovery -------------------
+def get_main_categories(driver: webdriver.Chrome) -> List[str]:
+    safe_get(driver, "https://altex.ro/")
+    try:
+        WebDriverWait(driver, 1).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "body"))
+        )
+    except Exception:
+        pass
+    links = driver.find_elements(By.CSS_SELECTOR, "a[href*='/cpl/']")
+    categories = set()
+    for a in links:
+        try:
+            href = a.get_attribute("href")
+            if not href:
+                continue
+            parsed = urlparse(href)
+            parts = [p for p in parsed.path.strip("/").split("/") if p]
+            if len(parts) == 2 and parts[1] == "cpl":
+                categories.add(href if href.endswith("/") else href + "/")
+        except Exception:
+            continue
+    return sorted(categories)
+
+
 # ------------------- Main -------------------
 def main():
-    # DEFAULT VALUES for direct run
-    default_url = "https://altex.ro/tablete/cpl/filtru/"  # URL categorie
-    default_pages = 3
-    default_output = os.path.join(os.getcwd(), "altex_results.json")
-
     driver = build_driver()
+    all_results: List[Dict[str, Any]] = []
     try:
-        items = crawl_listing(driver, default_url, default_pages)
+        categories = get_main_categories(driver)
+        print(f"Found {len(categories)} main categories:\n")
+        for idx, cat in enumerate(categories, 1):
+            print(f"{idx}. {cat}")
+        print("\n--- Starting crawling ---\n")
+        for cat_url in categories:
+            print(f"[*] Crawling category: {cat_url}")
+            items = crawl_listing(driver, cat_url, max_pages=3)
+            for i in items:
+                i["category"] = cat_url
+            all_results.extend(items)
     finally:
         driver.quit()
 
-    os.makedirs(os.path.dirname(default_output), exist_ok=True)
-    with open(default_output, "w", encoding="utf-8") as f:
-        json.dump(items, f, ensure_ascii=False, indent=2)
-    print(f"Saved {len(items)} items to {default_output}")
+    output_file = os.path.join(os.getcwd(), "altex_all_categories.json")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w", encoding="utf-8") as f:
+        json.dump(all_results, f, ensure_ascii=False, indent=2)
+    print(f"\nSaved {len(all_results)} items to {output_file}")
 
 
 if __name__ == "__main__":
