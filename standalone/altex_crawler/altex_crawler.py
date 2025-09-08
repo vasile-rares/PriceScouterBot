@@ -1,7 +1,4 @@
-import json
-import os
-import time
-import random
+import json, os, time, random
 from typing import List, Dict, Any
 from urllib.parse import urljoin, urlparse
 
@@ -14,7 +11,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-# ------------------- Driver -------------------
 def build_driver() -> webdriver.Chrome:
     opts = Options()
     opts.add_argument("--headless=new")
@@ -50,7 +46,6 @@ def build_driver() -> webdriver.Chrome:
     return driver
 
 
-# ------------------- Parsing -------------------
 def parse_price(text: str) -> float | None:
     if not text:
         return None
@@ -71,7 +66,6 @@ def parse_price(text: str) -> float | None:
         return None
 
 
-# ------------------- Crawling -------------------
 def safe_get(
     driver: webdriver.Chrome, url: str, retries: int = 2, wait_after: float = 0.2
 ) -> None:
@@ -91,7 +85,7 @@ def safe_get(
 def crawl_page(driver: webdriver.Chrome, url: str) -> List[Dict[str, Any]]:
     safe_get(driver, url)
     try:
-        WebDriverWait(driver, 1).until(
+        WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "body"))
         )
     except Exception:
@@ -152,7 +146,6 @@ def crawl_listing(
     return deduped
 
 
-# ------------------- Category Discovery -------------------
 def get_main_categories(driver: webdriver.Chrome) -> List[str]:
     safe_get(driver, "https://altex.ro/")
     try:
@@ -177,7 +170,6 @@ def get_main_categories(driver: webdriver.Chrome) -> List[str]:
     return sorted(categories)
 
 
-# ------------------- Main -------------------
 def main():
     driver = build_driver()
     all_results: List[Dict[str, Any]] = []
