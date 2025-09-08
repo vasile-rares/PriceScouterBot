@@ -89,7 +89,7 @@ def parse_price(text: str) -> float | None:
         return None
 
 def get_products_from_html(html: str, base_url: str) -> List[Dict[str, Any]]:
-    soup = BeautifulSoup(html, "lxml")  # lxml = mai rapid decât html.parser
+    soup = BeautifulSoup(html, "lxml")
     products = []
     for el in soup.select("article.product-box"):
         try:
@@ -118,7 +118,12 @@ MAX_CONCURRENT_REQUESTS = 25
 RETRY_COUNT = 2
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
+# contor global pentru progres
+progress_counter = 0
+progress_lock = asyncio.Lock()
+
 async def fetch_page_async(scraper, url: str, category_url: str):
+    global progress_counter
     async with semaphore:
         for attempt in range(RETRY_COUNT):
             try:
@@ -127,13 +132,16 @@ async def fetch_page_async(scraper, url: str, category_url: str):
                 products = get_products_from_html(html.text, url)
                 for p in products:
                     p["category"] = category_url
+                # actualizare progres
+                async with progress_lock:
+                    progress_counter += len(products)
+                    print(f"[*] {url} -> Found {len(products)} products | Total processed: {progress_counter}")
                 soup = BeautifulSoup(html.text, "lxml")
                 next_exists = bool(soup.select_one("li.pagination-next a"))
-                print(f"[*] {url} -> Found {len(products)} products")
                 return products, next_exists
             except Exception as e:
                 print(f"Attempt {attempt+1} failed for {url}: {e}")
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(0.1)
         return [], False
 
 async def crawl_category_async(category_url: str, max_pages: int = 50) -> List[Dict[str, Any]]:
